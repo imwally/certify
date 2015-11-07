@@ -3,13 +3,14 @@ package main
 import (
 	"crypto/tls"
 	"errors"
+	"fmt"
 	"log"
 	"net/url"
 	"os"
 	"regexp"
 )
 
-func getHost(s string) string {
+func Host(s string) string {
 	u, err := url.Parse(s)
 	if err != nil {
 		log.Fatal(err)
@@ -30,21 +31,28 @@ func findURL(s []string) (url string, err error) {
 	return "", errors.New("certify: no secure uri found")
 }
 
-func main() {
-
-	command := os.Args[1:]
-
-	found, err := findURL(command)
+func Certify(s []string) {
+	found, err := findURL(s)
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
 
-	host := getHost(found)
+	host := Host(found)
 
 	conn, err := tls.Dial("tcp", host+":443", nil)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
+	defer conn.Close()
+}
 
+func main() {
+
+	if len(os.Args) < 2 {
+		fmt.Println("certify: no command given")
+		return
+	}
+
+	Certify(os.Args[1:])
 }
