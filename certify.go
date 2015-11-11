@@ -10,15 +10,6 @@ import (
 	"regexp"
 )
 
-func Host(s string) string {
-	u, err := url.Parse(s)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return u.Host
-}
-
 func findURL(s []string) (url string, err error) {
 	validURL := regexp.MustCompile(`^https://[a-z]`)
 
@@ -37,10 +28,13 @@ func Certify(s []string) {
 		log.Fatal(err)
 		return
 	}
+	
+	u, err := url.Parse(found)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	host := Host(found)
-
-	conn, err := tls.Dial("tcp", host+":443", nil)
+	conn, err := tls.Dial("tcp", u.Host+":443", nil)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
