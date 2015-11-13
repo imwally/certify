@@ -2,6 +2,7 @@ package main
 
 import (
 	"crypto/tls"
+	"crypto/x509"
 	"errors"
 	"fmt"
 	"log"
@@ -36,13 +37,37 @@ var TLSVersion = map[uint16]string{
 	tls.VersionTLS12: "TLS v1.2",
 }
 
+func printCertificateInfo(cert *x509.Certificate) {
+
+	country := cert.Issuer.Country
+	organization := cert.Issuer.Organization
+	organizationalUnit := cert.Issuer.OrganizationalUnit
+	notBefore := cert.NotBefore
+	notAfter := cert.NotAfter
+
+	fmt.Println("--- Certificate Information ---")
+	fmt.Println("Issuer:")
+	fmt.Println("\tCountry:\t   ", country)
+	fmt.Println("\tOrganization:\t   ", organization)
+	fmt.Println("\tOrganization Unit: ", organizationalUnit)
+
+	fmt.Println("Valid:")
+	fmt.Println("\tNot Before:\t", notBefore)
+	fmt.Println("\tNot After:\t", notAfter)
+
+	fmt.Println()
+}
+
 func printTLSInfo(state tls.ConnectionState) {
 
 	version := TLSVersion[state.Version]
 	suite := TLSCipherSuite[state.CipherSuite]
 
-	fmt.Println("Version: ", version)
-	fmt.Println("Cipher Suite: ", suite)
+	fmt.Println("--- TLS Information ---")
+	fmt.Println("Version:\t", version)
+	fmt.Println("Cipher Suite:\t", suite)
+
+	fmt.Println()
 }
 
 func findURL(s []string) (url string, err error) {
@@ -58,12 +83,15 @@ func findURL(s []string) (url string, err error) {
 }
 
 func Certify(s []string) {
+
+	// Parse command and return the first URL found.
 	found, err := findURL(s)
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
 
+	// Parse URL as we only need the hostname.
 	u, err := url.Parse(found)
 	if err != nil {
 		log.Fatal(err)
@@ -76,6 +104,10 @@ func Certify(s []string) {
 	defer conn.Close()
 
 	printTLSInfo(conn.ConnectionState())
+
+	for _, cert := range conn.ConnectionState().PeerCertificates {
+		printCertificateInfo(cert)
+	}
 }
 
 func main() {
