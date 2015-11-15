@@ -44,7 +44,7 @@ func printCertificateInfo(cert *x509.Certificate) {
 	// Fingerprint
 	fingerprint1 := sha1.Sum(cert.Raw)
 	fingerprint256 := sha256.Sum256(cert.Raw)
-	
+
 	// Issuer
 	country := cert.Issuer.Country
 	organization := cert.Issuer.Organization
@@ -58,7 +58,7 @@ func printCertificateInfo(cert *x509.Certificate) {
 	// Validity
 	notBefore := cert.NotBefore
 	notAfter := cert.NotAfter
-	
+
 	fmt.Println("--- Certificate Information ---")
 	fmt.Printf("\n\t% x\n", fingerprint1)
 	fmt.Printf("\t% x\n", fingerprint256)
@@ -70,7 +70,7 @@ func printCertificateInfo(cert *x509.Certificate) {
 	fmt.Println("\tC: ", subCountry)
 	fmt.Println("\tO: ", subOrganization)
 	fmt.Println("\tOU:", subOrganizationalUnit)
-	
+
 	fmt.Println("Valid:")
 	fmt.Println("\tNot Before:", notBefore)
 	fmt.Println("\tNot After: ", notAfter)
