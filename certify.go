@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/sha1"
+	"crypto/sha256"
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
@@ -39,21 +41,39 @@ var TLSVersion = map[uint16]string{
 
 func printCertificateInfo(cert *x509.Certificate) {
 
+	// Fingerprint
+	fingerprint1 := sha1.Sum(cert.Raw)
+	fingerprint256 := sha256.Sum256(cert.Raw)
+	
+	// Issuer
 	country := cert.Issuer.Country
 	organization := cert.Issuer.Organization
 	organizationalUnit := cert.Issuer.OrganizationalUnit
+
+	// Subject
+	subCountry := cert.Subject.Country
+	subOrganization := cert.Subject.Organization
+	subOrganizationalUnit := cert.Subject.OrganizationalUnit
+
+	// Validity
 	notBefore := cert.NotBefore
 	notAfter := cert.NotAfter
-
+	
 	fmt.Println("--- Certificate Information ---")
+	fmt.Printf("\n\t% x\n", fingerprint1)
+	fmt.Printf("\t% x\n", fingerprint256)
 	fmt.Println("Issuer:")
-	fmt.Println("\tCountry:\t   ", country)
-	fmt.Println("\tOrganization:\t   ", organization)
-	fmt.Println("\tOrganization Unit: ", organizationalUnit)
-
+	fmt.Println("\tC: ", country)
+	fmt.Println("\tO: ", organization)
+	fmt.Println("\tOU:", organizationalUnit)
+	fmt.Println("Subject:")
+	fmt.Println("\tC: ", subCountry)
+	fmt.Println("\tO: ", subOrganization)
+	fmt.Println("\tOU:", subOrganizationalUnit)
+	
 	fmt.Println("Valid:")
-	fmt.Println("\tNot Before:\t", notBefore)
-	fmt.Println("\tNot After:\t", notAfter)
+	fmt.Println("\tNot Before:", notBefore)
+	fmt.Println("\tNot After: ", notAfter)
 
 	fmt.Println()
 }
