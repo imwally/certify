@@ -41,39 +41,45 @@ var TLSVersion = map[uint16]string{
 
 func printCertificateInfo(cert *x509.Certificate) {
 
-	// Fingerprint
-	fingerprint1 := sha1.Sum(cert.Raw)
-	fingerprint256 := sha256.Sum256(cert.Raw)
+	// Subject
+	subCommonName := cert.DNSNames
+	subCountry := cert.Subject.Country
+	subOrganization := cert.Subject.Organization
+	subOrganizationalUnit := cert.Subject.OrganizationalUnit
 
 	// Issuer
 	country := cert.Issuer.Country
 	organization := cert.Issuer.Organization
 	organizationalUnit := cert.Issuer.OrganizationalUnit
 
-	// Subject
-	subCountry := cert.Subject.Country
-	subOrganization := cert.Subject.Organization
-	subOrganizationalUnit := cert.Subject.OrganizationalUnit
-
 	// Validity
 	notBefore := cert.NotBefore
 	notAfter := cert.NotAfter
 
+	// Fingerprint
+	fingerprint1 := sha1.Sum(cert.Raw)
+	fingerprint256 := sha256.Sum256(cert.Raw)
+
 	fmt.Println("--- Certificate Information ---")
-	fmt.Printf("\n\t% x\n", fingerprint1)
-	fmt.Printf("\t% x\n", fingerprint256)
-	fmt.Println("Issuer:")
-	fmt.Println("\tC: ", country)
-	fmt.Println("\tO: ", organization)
-	fmt.Println("\tOU:", organizationalUnit)
+
 	fmt.Println("Subject:")
+	fmt.Println("\tCN:", subCommonName)
 	fmt.Println("\tC: ", subCountry)
 	fmt.Println("\tO: ", subOrganization)
 	fmt.Println("\tOU:", subOrganizationalUnit)
 
+	fmt.Println("Issuer:")
+	fmt.Println("\tC: ", country)
+	fmt.Println("\tO: ", organization)
+	fmt.Println("\tOU:", organizationalUnit)
+
 	fmt.Println("Valid:")
 	fmt.Println("\tNot Before:", notBefore)
 	fmt.Println("\tNot After: ", notAfter)
+
+	fmt.Println("Fingerprints:")
+	fmt.Printf("\tSHA1:   % x\n", fingerprint1)
+	fmt.Printf("\tSHA256: % x\n", fingerprint256)
 
 	fmt.Println()
 }
