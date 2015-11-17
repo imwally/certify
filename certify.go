@@ -39,20 +39,40 @@ var TLSVersion = map[uint16]string{
 	tls.VersionTLS12: "TLS v1.2",
 }
 
+// namesToName reduces a slice of strings to a single string
+func namesToName(names []string) string {
+	retName := ""
+	if names == nil {
+		retName = "<blank>"
+	} else {
+		for i, name := range names {
+			retName += name
+			if i != len(names)-1 {
+				retName += " / "
+			}
+		}
+	}
+
+	return retName
+}
+
 func printCertificateInfo(cert *x509.Certificate) {
 
 	// Subject
-	subCommonName := cert.DNSNames
-	subCountry := cert.Subject.Country
-	subOrganization := cert.Subject.Organization
-	subOrganizationalUnit := cert.Subject.OrganizationalUnit
+	sub := cert.Subject
+	subCN := sub.CommonName
+	subC := namesToName(sub.Country)
+	subO := namesToName(sub.Organization)
+	subOU := namesToName(sub.OrganizationalUnit)
 
 	// Issuer
-	country := cert.Issuer.Country
-	organization := cert.Issuer.Organization
-	organizationalUnit := cert.Issuer.OrganizationalUnit
+	issuer := cert.Issuer
+	issuerC := namesToName(issuer.Country)
+	issuerO := namesToName(issuer.Organization)
+	issuerOU := namesToName(issuer.OrganizationalUnit)
 
 	// Validity
+	domains := namesToName(cert.DNSNames)
 	notBefore := cert.NotBefore
 	notAfter := cert.NotAfter
 
@@ -62,24 +82,25 @@ func printCertificateInfo(cert *x509.Certificate) {
 
 	fmt.Println("--- Certificate Information ---")
 
-	fmt.Println("Subject:")
-	fmt.Println("\tCN:", subCommonName)
-	fmt.Println("\tC: ", subCountry)
-	fmt.Println("\tO: ", subOrganization)
-	fmt.Println("\tOU:", subOrganizationalUnit)
+	fmt.Println("\nSubject:")
+	fmt.Println("\tCN:", subCN)
+	fmt.Println("\tC: ", subC)
+	fmt.Println("\tO: ", subO)
+	fmt.Println("\tOU:", subOU)
 
-	fmt.Println("Issuer:")
-	fmt.Println("\tC: ", country)
-	fmt.Println("\tO: ", organization)
-	fmt.Println("\tOU:", organizationalUnit)
+	fmt.Println("\nIssuer:")
+	fmt.Println("\tC: ", issuerC)
+	fmt.Println("\tO: ", issuerO)
+	fmt.Println("\tOU:", issuerOU)
 
-	fmt.Println("Valid:")
+	fmt.Println("\nValid:")
 	fmt.Println("\tNot Before:", notBefore)
 	fmt.Println("\tNot After: ", notAfter)
+	fmt.Println("\tDomains: ", domains)
 
-	fmt.Println("Fingerprints:")
-	fmt.Printf("\tSHA1:   % x\n", fingerprint1)
-	fmt.Printf("\tSHA256: % x\n", fingerprint256)
+	fmt.Println("\nFingerprints:")
+	fmt.Printf("\tSHA1:   %x\n", fingerprint1)
+	fmt.Printf("\tSHA256: %x\n", fingerprint256)
 
 	fmt.Println()
 }
@@ -125,7 +146,7 @@ func Certify(s []string) {
 
 	conn, err := tls.Dial("tcp", u.Host+":443", nil)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal(err)
 	}
 	defer conn.Close()
 
