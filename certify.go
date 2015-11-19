@@ -67,6 +67,7 @@ func printCertificateInfo(cert *x509.Certificate) {
 
 	// Issuer
 	issuer := cert.Issuer
+	issuerCN := issuer.CommonName
 	issuerC := namesToName(issuer.Country)
 	issuerO := namesToName(issuer.Organization)
 	issuerOU := namesToName(issuer.OrganizationalUnit)
@@ -89,6 +90,7 @@ func printCertificateInfo(cert *x509.Certificate) {
 	fmt.Println("\tOU:", subOU)
 
 	fmt.Println("\nIssuer:")
+	fmt.Println("\tCN:", issuerCN)
 	fmt.Println("\tC: ", issuerC)
 	fmt.Println("\tO: ", issuerO)
 	fmt.Println("\tOU:", issuerOU)
@@ -146,7 +148,7 @@ func Certify(s []string) {
 
 	conn, err := tls.Dial("tcp", u.Host+":443", nil)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err.Error())
 	}
 	defer conn.Close()
 
