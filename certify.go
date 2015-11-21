@@ -152,11 +152,6 @@ func Certify(s []string) {
 	}
 	defer conn.Close()
 
-	printTLSInfo(conn.ConnectionState())
-
-	for _, cert := range conn.ConnectionState().PeerCertificates {
-		printCertificateInfo(cert)
-	}
 }
 
 func main() {
