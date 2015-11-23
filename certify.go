@@ -107,10 +107,10 @@ func printCertificateInfo(cert *x509.Certificate) {
 	fmt.Println("\nFingerprints:")
 	fmt.Printf("\tSHA1:   %x\n", fingerprint1)
 	fmt.Printf("\tSHA256: %x\n", fingerprint256)
-	
+
 	fmt.Println("\nSerial Number:")
 	fmt.Printf("\t%s\n", serial)
-	
+
 	fmt.Println()
 }
 
